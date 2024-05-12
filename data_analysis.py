@@ -62,26 +62,40 @@ else:
 
 #Create filter for Product Size (kg)
 size = st.sidebar.multiselect("Pick your Product Size",df3["Product Size (kg)"].unique())
+if not size:
+    df4 = df3.copy()
+else:
+    df4 = df3[df3["Product Size (kg)"].isin(size)]
+
+#Create filter for loyalty card
+loyalty = st.sidebar.multiselect("Have loyalty card?",df4["Customer Loyalty Card"].unique())
 
 st.sidebar.header("09040622059 - Fernanda Widyadhana Tsaqif")
 
-#Filter berdasarkan country, roast, dan size
-if not country and not roast and not size:
+# Filter based on country, roast, size, and loyalty card
+if not country and not roast and not size and not loyalty:
     filtere_df = df
-elif not roast and not size:
+elif not roast and not size and not loyalty:
     filtere_df = df[df["Customer Country"].isin(country)]
-elif not country and not size:
+elif not country and not size and not loyalty:
     filtere_df = df[df["Product Roast Type"].isin(roast)]
-elif roast and size:
-    filtere_df = df3[df["Product Roast Type"].isin(roast) & df3["Product Size (kg)"].isin(size)] 
-elif country and size:
-    filtere_df = df3[df["Customer Country"].isin(country) & df3["Product Size (kg)"].isin(size)] 
-elif country and roast:
-    filtere_df = df3[df["Customer Country"].isin(country) & df3["Product Roast Type"].isin(roast)] 
-elif roast:
-    filtere_df = df3[df3["Product Roast Type"].isin(roast)] 
+elif not country and not roast and not loyalty:
+    filtere_df = df[df["Product Size (kg)"].isin(size)]
+elif roast and size and loyalty:
+    filtere_df = df4[df4["Product Roast Type"].isin(roast) & df4["Product Size (kg)"].isin(size) & df4["Customer Loyalty Card"].isin(loyalty)]
+elif country and size and loyalty:
+    filtere_df = df4[df4["Customer Country"].isin(country) & df4["Product Size (kg)"].isin(size) & df4["Customer Loyalty Card"].isin(loyalty)]
+elif country and roast and loyalty:
+    filtere_df = df4[df4["Customer Country"].isin(country) & df4["Product Roast Type"].isin(roast) & df4["Customer Loyalty Card"].isin(loyalty)]
+elif roast and loyalty:
+    filtere_df = df4[df4["Product Roast Type"].isin(roast) & df4["Customer Loyalty Card"].isin(loyalty)]
+elif country and loyalty:
+    filtere_df = df4[df4["Customer Country"].isin(country) & df4["Customer Loyalty Card"].isin(loyalty)]
+elif size and loyalty:
+    filtere_df = df4[df4["Product Size (kg)"].isin(size) & df4["Customer Loyalty Card"].isin(loyalty)]
 else:
-    filtere_df = df3[df3["Customer Country"].isin(country) & df3["Product Roast Type"].isin(roast)] & df3[df3["Product Size (kg)"].isin(size)]
+    filtere_df = df4
+
 
 category_df = filtere_df.groupby(by = ["Product Coffee Type"], as_index = False)["Order Quantity"].sum()
 
